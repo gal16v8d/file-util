@@ -188,7 +188,7 @@ public class FileUtilTest {
     }
 
     @Test
-    public void comprimirConPassTest(@TempDir Path tempDir) throws IOException {
+    public void zipFileUsingPassTest(@TempDir Path tempDir) throws IOException {
         File file = tempDir.toFile();
         File.createTempFile(TEST_1, TXT, file);
         String filePath = file.getAbsolutePath();
