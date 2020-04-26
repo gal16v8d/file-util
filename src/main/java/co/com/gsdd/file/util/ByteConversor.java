@@ -28,10 +28,9 @@ public final class ByteConversor {
     }
 
     private static String getFileSizeInUnit(String value, int unit) {
-        return new StringBuilder().append(value).append(" ")
-                .append(FileConstants.getByteUnits()[unit]).toString();
+        return new StringBuilder().append(value).append(" ").append(FileConstants.getByteUnits()[unit]).toString();
     }
-    
+
     public static boolean getMinAvailableSize(long value, long minAvailable) {
         return value >= minAvailable;
     }

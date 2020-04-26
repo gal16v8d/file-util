@@ -13,8 +13,8 @@ import lombok.ToString;
 @ToString
 public class UploadableFile implements Serializable {
 
-	private static final long serialVersionUID = 4691510311799060770L;
-	private String user;
+    private static final long serialVersionUID = 4691510311799060770L;
+    private String user;
     private String pass;
     private String encoding;
 
