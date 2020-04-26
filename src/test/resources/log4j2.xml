@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<Property name="basePath">./log</Property>
+		<Property name="baseProyectName">file-util</Property>
+	</Properties>
+
+	<Appenders>
+		<!-- Console Appender -->
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %5p [%t] (%c) - %m%n" />
+		</Console>
+
+		<!-- File Appender 
+		<RollingFile name="File" fileName="${basePath}/${baseProyectName}.log"
+			filePattern="${basePath}/${baseProyectName}.log-%i.gz" immediateFlush="true">
+			<PatternLayout pattern="%d %5p [%t] (%c) - %m%n" />
+			<CronTriggeringPolicy schedule="0 0 0/1 * * ? *" />
+			<DefaultRolloverStrategy max="24" /> 
+		</RollingFile> -->
+	</Appenders>
+	
+	<Loggers>
+		<Root level="OFF">
+			<AppenderRef ref="Console" />
+			<!-- <AppenderRef ref="File" /> -->
+		</Root>
+	</Loggers>
+</Configuration>
