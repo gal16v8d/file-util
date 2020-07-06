@@ -162,7 +162,7 @@ public final class FTPUtil {
     public static boolean transferFileOS(UploadableFTPFile ftpo, FTPClient client, String route, String ftpRoute,
             int transferSpeed, int printStep) {
         try (InputStream is = new FileInputStream(new File(route));
-                OutputStream os = client.storeFileStream(ftpRoute);) {
+                OutputStream os = client.storeFileStream(ftpRoute)) {
             byte[] bytesIn = new byte[transferSpeed];
             int read = NumericConstants.ZERO;
             int count = NumericConstants.ZERO;

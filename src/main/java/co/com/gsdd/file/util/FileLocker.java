@@ -23,7 +23,7 @@ public class FileLocker {
         boolean response = true;
         File file = new File(appName + FileConstants.FILE_EXT);
         try (FileChannel channel = new RandomAccessFile(file, FileConstants.FILE_PERMISSION).getChannel();
-                FileLock lock = channel.tryLock();) {
+                FileLock lock = channel.tryLock()) {
             if (lock == null) {
                 closeLock(lock, channel);
             }
@@ -44,6 +44,20 @@ public class FileLocker {
             }
         }
         IOUtils.closeQuietly(channel);
+    }
+
+    @AllArgsConstructor
+    public class ShutdownThread implements Runnable {
+
+        private FileLock lock;
+        private FileChannel channel;
+        private File file;
+
+        @Override
+        public void run() {
+            closeLock(lock, channel);
+            FileUtil.deleteFile(file);
+        }
     }
 
 }
