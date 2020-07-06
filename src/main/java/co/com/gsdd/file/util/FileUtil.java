@@ -71,7 +71,7 @@ public final class FileUtil {
             File fr = generateFileFromRoute(route);
             File[] filesOnDir = getFilesFromDir(fr);
             Stream.of(filesOnDir).filter(file -> file.isFile() && file.length() == NumericConstants.ZERO)
-                    .forEach(file -> deleteFile(file));
+                    .forEach(FileUtil::deleteFile);
         } catch (Exception e) {
             throw new TechnicalException(e);
         }
@@ -166,7 +166,7 @@ public final class FileUtil {
     public static boolean zipFile(String zipName, String fileName, int byteBuffer) {
         byte[] buffer = new byte[byteBuffer];
         FileInputStream fis = null;
-        try (FileOutputStream fos = new FileOutputStream(zipName); ZipOutputStream zos = new ZipOutputStream(fos);) {
+        try (FileOutputStream fos = new FileOutputStream(zipName); ZipOutputStream zos = new ZipOutputStream(fos)) {
             int len;
             fis = new FileInputStream(fileName);
             ZipEntry ze = new ZipEntry(zipName);
@@ -196,7 +196,7 @@ public final class FileUtil {
      */
     public static boolean unzipFile(String inputZip, String outDir, int byteBuffer) {
         FileOutputStream fos = null;
-        try (FileInputStream fis = new FileInputStream(inputZip); ZipInputStream zis = new ZipInputStream(fis);) {
+        try (FileInputStream fis = new FileInputStream(inputZip); ZipInputStream zis = new ZipInputStream(fis)) {
             ZipEntry zipFile = null;
             while ((zipFile = zis.getNextEntry()) != null) {
                 File fileExtracted = new File(outDir + File.separator + zipFile.getName());
