@@ -29,6 +29,8 @@
 		<mvn.surefire.plugin.version>3.0.0-M4</mvn.surefire.plugin.version>
 		<mvn.javadoc.plugin.version>3.1.1</mvn.javadoc.plugin.version>
 		<mvn.format.plugin.version>2.10.0</mvn.format.plugin.version>
+		<mvn.dependency.plugin.version>3.1.1</mvn.dependency.plugin.version>
+		<mvn.source.plugin.version>3.2.0</mvn.source.plugin.version>
 
 		<!-- If true skips UT test execution -->
 		<skip.unit.tests>false</skip.unit.tests>
@@ -50,12 +52,11 @@
 		<commons.io.version>2.5</commons.io.version>
 		<commons.codec.version>1.9</commons.codec.version>
 		<!-- test dependencies -->
-		<junit.version>5.5.2</junit.version>
+		<junit.version>5.6.2</junit.version>
 		<mockito.version>3.2.4</mockito.version>
 		<!-- Logger test -->
 		<log4j.bridge.version>2.9.0</log4j.bridge.version>
-		<log4j.version>2.11.1</log4j.version>
-		<!-- Dependencias internas -->
+		<log4j.version>2.13.3</log4j.version>
 		<validator-util.version>1.0.001</validator-util.version>
 	</properties>
 
@@ -280,6 +281,38 @@
 					<execution>
 						<goals>
 							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${mvn.dependency.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>lombok</includeArtifactIds>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${mvn.source.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
