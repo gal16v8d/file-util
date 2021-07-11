@@ -29,7 +29,7 @@ import co.com.gsdd.exception.TechnicalException;
 import co.com.gsdd.file.util.model.UploadableFTPFile;
 
 @ExtendWith(MockitoExtension.class)
-public class FTPUtilTest {
+class FTPUtilTest {
 
     @Mock
     private FTPClient ftpClient;
@@ -37,8 +37,8 @@ public class FTPUtilTest {
     private static final String[] REPLY_DATA = { "This", "is a", "test" };
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
