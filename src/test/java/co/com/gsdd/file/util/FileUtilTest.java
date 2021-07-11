@@ -23,7 +23,7 @@ import co.com.gsdd.constants.NumericConstants;
 import co.com.gsdd.exception.TechnicalException;
 
 @ExtendWith(MockitoExtension.class)
-public class FileUtilTest {
+class FileUtilTest {
 
     private static final Long EIGHT_THOUSAND = 8000L;
     private static final String TEST_1 = "test_1_";
@@ -33,7 +33,7 @@ public class FileUtilTest {
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
-    public void checkDirectoryTest(boolean createTempFile, @TempDir Path tempDir) {
+    void checkDirectoryTest(boolean createTempFile, @TempDir Path tempDir) {
         File f = tempDir.toFile();
         if (createTempFile) {
             f.mkdir();
@@ -42,17 +42,17 @@ public class FileUtilTest {
     }
 
     @Test
-    public void checkDirectoryExcTest() {
+    void checkDirectoryExcTest() {
         Assertions.assertThrows(TechnicalException.class, () -> FileUtil.checkDirectory(null));
     }
 
     @Test
-    public void checkAvailableSpaceOnDirTest(@TempDir Path tempDir) {
+    void checkAvailableSpaceOnDirTest(@TempDir Path tempDir) {
         Assertions.assertTrue(FileUtil.checkAvailableSpaceOnDir(tempDir.toFile().getAbsolutePath(), EIGHT_THOUSAND));
     }
 
     @Test
-    public void checkAvailableSpaceOnDirExcTest() {
+    void checkAvailableSpaceOnDirExcTest() {
         Assertions.assertThrows(TechnicalException.class,
                 () -> FileUtil.checkAvailableSpaceOnDir(null, EIGHT_THOUSAND));
     }
@@ -65,14 +65,14 @@ public class FileUtilTest {
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
-    public void deleteEmptyFilesTest(boolean createTempFile, @TempDir Path tempDir) throws IOException {
+    void deleteEmptyFilesTest(boolean createTempFile, @TempDir Path tempDir) throws IOException {
         String filePath = getFilePath(createTempFile, tempDir);
         FileUtil.deleteEmptyFiles(filePath);
         assertDirectoryContent(filePath, 0);
     }
 
     @Test
-    public void deleteEmptyFilesFolderTest(@TempDir Path tempDir) throws IOException {
+    void deleteEmptyFilesFolderTest(@TempDir Path tempDir) throws IOException {
         File folder = tempDir.resolve("test").toFile();
         folder.mkdir();
         String filePath = tempDir.toFile().getAbsolutePath();
@@ -81,7 +81,7 @@ public class FileUtilTest {
     }
 
     @Test
-    public void deleteEmptyFilesNotEmptyTest(@TempDir Path tempDir) throws IOException {
+    void deleteEmptyFilesNotEmptyTest(@TempDir Path tempDir) throws IOException {
         File file = tempDir.toFile();
         File tmpFile = File.createTempFile(TEST_1, TXT, file);
         String filePath = file.getAbsolutePath();
@@ -91,53 +91,53 @@ public class FileUtilTest {
     }
 
     @Test
-    public void deleteEmptyFilesExcTest() {
+    void deleteEmptyFilesExcTest() {
         Assertions.assertThrows(TechnicalException.class, () -> FileUtil.deleteEmptyFiles(null));
     }
 
     @Test
-    public void deleteFileNotExistsTest(@Mock File file) {
+    void deleteFileNotExistsTest(@Mock File file) {
         Mockito.doReturn(false).when(file).exists();
         Assertions.assertFalse(FileUtil.deleteFile(file));
     }
 
     @Test
-    public void deleteFileNullTest() {
+    void deleteFileNullTest() {
         Assertions.assertFalse(FileUtil.deleteFile(null));
     }
 
     @Test
-    public void deleteFileExcFalseTest(@Mock File file) {
+    void deleteFileExcFalseTest(@Mock File file) {
         Mockito.doReturn(true).when(file).exists();
         Mockito.doThrow(new RuntimeException()).when(file).toPath();
         Assertions.assertFalse(FileUtil.deleteFile(file));
     }
 
     @Test
-    public void getLastModifiedFileExcTest() {
+    void getLastModifiedFileExcTest() {
         Assertions.assertThrows(TechnicalException.class, () -> FileUtil.getLastModifiedFile(null));
     }
 
     @Test
-    public void getLastModifiedFileNotEmptyTest(@TempDir Path tempDir) throws IOException {
+    void getLastModifiedFileNotEmptyTest(@TempDir Path tempDir) throws IOException {
         File resultFile = FileUtil.getLastModifiedFile(getFilePath(true, tempDir));
         Assertions.assertTrue(resultFile.getName().startsWith(TEST_1));
         Assertions.assertTrue(resultFile.getName().endsWith(TXT));
     }
 
     @Test
-    public void getLastModifiedFileEmptyTest(@TempDir Path tempDir) {
+    void getLastModifiedFileEmptyTest(@TempDir Path tempDir) {
         Assertions.assertNull(FileUtil.getLastModifiedFile(tempDir.toFile().getAbsolutePath()));
     }
 
     @Test
-    public void deleteOldFilesExcTest() {
+    void deleteOldFilesExcTest() {
         Assertions.assertThrows(TechnicalException.class, () -> FileUtil.deleteOldFiles(null, 0));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
-    public void deleteOldFilesTest(boolean createTempFile, @TempDir Path tempDir) throws IOException {
+    void deleteOldFilesTest(boolean createTempFile, @TempDir Path tempDir) throws IOException {
         String filePath = getFilePath(createTempFile, tempDir);
         boolean deleted = FileUtil.deleteOldFiles(filePath, 0);
         assertDirectoryContent(filePath, 0);
@@ -145,7 +145,7 @@ public class FileUtilTest {
     }
 
     @Test
-    public void deleteOldFilesWithBackTest(@TempDir Path tempDir) throws IOException {
+    void deleteOldFilesWithBackTest(@TempDir Path tempDir) throws IOException {
         String filePath = getFilePath(true, tempDir);
         boolean deleted = FileUtil.deleteOldFiles(filePath, 1);
         assertDirectoryContent(filePath, 1);
@@ -153,7 +153,7 @@ public class FileUtilTest {
     }
 
     @Test
-    public void zipFileEmptyTest(@TempDir Path tempDir) throws IOException {
+    void zipFileEmptyTest(@TempDir Path tempDir) throws IOException {
         String filePath = getFilePath(true, tempDir);
         File[] filesOnDir = new File(filePath).listFiles();
         boolean zip = FileUtil.zipFile(filePath + File.separator + TEST_ZIP, filesOnDir[0].getAbsolutePath(), 4096);
@@ -164,13 +164,13 @@ public class FileUtilTest {
     }
 
     @Test
-    public void zipFileUsingPassExcTest(@TempDir Path tempDir) throws IOException {
+    void zipFileUsingPassExcTest(@TempDir Path tempDir) throws IOException {
         String filePath = tempDir.toFile().getAbsolutePath() + File.separator + TEST_ZIP;
         Assertions.assertThrows(TechnicalException.class, () -> FileUtil.zipFileUsingPass(filePath, null, CYPHER));
     }
 
     @Test
-    public void zipFileNotEmptyTest(@TempDir Path tempDir) throws IOException {
+    void zipFileNotEmptyTest(@TempDir Path tempDir) throws IOException {
         String filePath = getFilePath(true, tempDir);
         File f = new File(filePath + File.separator + TEST_1 + TXT);
         writeOnFile(f);
@@ -183,12 +183,12 @@ public class FileUtilTest {
     }
 
     @Test
-    public void zipFileExcTest() {
+    void zipFileExcTest() {
         Assertions.assertThrows(TechnicalException.class, () -> FileUtil.zipFile(null, null, 4096));
     }
 
     @Test
-    public void zipFileUsingPassTest(@TempDir Path tempDir) throws IOException {
+    void zipFileUsingPassTest(@TempDir Path tempDir) throws IOException {
         File file = tempDir.toFile();
         File.createTempFile(TEST_1, TXT, file);
         String filePath = file.getAbsolutePath();
