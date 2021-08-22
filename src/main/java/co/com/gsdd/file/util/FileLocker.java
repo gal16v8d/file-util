@@ -45,7 +45,7 @@ public class FileLocker {
         }
         IOUtils.closeQuietly(channel);
     }
-    
+
     @AllArgsConstructor
     public class ShutdownThread implements Runnable {
 
