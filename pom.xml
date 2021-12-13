@@ -3,15 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>co.com.gsdd</groupId>
+	<groupId>com.gsdd</groupId>
 	<artifactId>file-util</artifactId>
 	<version>1.0.001</version>
 	<packaging>jar</packaging>
 
+	<name>file-util</name>
 	<organization>
 		<name>GSDD</name>
 	</organization>
-	<name>file-util</name>
+	
 
 	<properties>
 		<!-- Gral settings -->
@@ -24,7 +25,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<mvn.compiler.plugin.version>3.8.1</mvn.compiler.plugin.version>
-		<mvn.jacoco.plugin.version>0.8.5</mvn.jacoco.plugin.version>
+		<mvn.jacoco.plugin.version>0.8.7</mvn.jacoco.plugin.version>
 		<mvn.failsafe.plugin.version>3.0.0-M4</mvn.failsafe.plugin.version>
 		<mvn.surefire.plugin.version>3.0.0-M4</mvn.surefire.plugin.version>
 		<mvn.javadoc.plugin.version>3.1.1</mvn.javadoc.plugin.version>
@@ -43,8 +44,8 @@
 		<jacoco.it.exec>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.exec>
 		<jacoco.it.reportPath>${project.build.directory}/coverage-reports/jacoco-it</jacoco.it.reportPath>
 
-		<lombok.version>1.18.20</lombok.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<lombok.version>1.18.22</lombok.version>
+		<slf4j.version>1.7.32</slf4j.version>
 		<zip4j.version>1.3.2</zip4j.version>
 		<jcifs.version>1.3.17</jcifs.version>
 		<jcabi.version>1.6.1</jcabi.version>
@@ -55,8 +56,7 @@
 		<junit.version>5.7.2</junit.version>
 		<mockito.version>3.9.0</mockito.version>
 		<!-- Logger test -->
-		<log4j.bridge.version>2.9.0</log4j.bridge.version>
-		<log4j.version>2.13.3</log4j.version>
+		<log4j.version>2.15.0</log4j.version>
 		<validator-util.version>1.0.001</validator-util.version>
 	</properties>
 
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.bridge.version}</version>
+			<version>${log4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -155,7 +155,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>co.com.gsdd</groupId>
+			<groupId>com.gsdd</groupId>
 			<artifactId>validator-util</artifactId>
 			<version>${validator-util.version}</version>
 		</dependency>
@@ -277,6 +277,9 @@
 				<groupId>net.revelc.code.formatter</groupId>
 				<artifactId>formatter-maven-plugin</artifactId>
 				<version>${mvn.format.plugin.version}</version>
+				<configuration>
+					<configFile>${project.basedir}/eclipse-java-google-style.xml</configFile>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
