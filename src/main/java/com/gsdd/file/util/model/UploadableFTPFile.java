@@ -12,9 +12,8 @@ import lombok.ToString;
 @ToString
 public class UploadableFTPFile extends UploadableFile {
 
-  private static final long serialVersionUID = -4986146704253121853L;
-  private String server;
-  private int port;
-  private boolean enableReply;
-
+    private static final long serialVersionUID = -4986146704253121853L;
+    private String server;
+    private int port;
+    private boolean enableReply;
 }
