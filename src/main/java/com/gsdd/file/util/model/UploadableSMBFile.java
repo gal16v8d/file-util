@@ -14,9 +14,9 @@ import lombok.ToString;
 @ToString
 public class UploadableSMBFile extends UploadableFile {
 
-    private static final long serialVersionUID = 3616139956403881273L;
-    private String url;
-    private SmbFile route;
-    private boolean reconnect;
-    private NtlmPasswordAuthentication auth;
+  private static final long serialVersionUID = 3616139956403881273L;
+  private String url;
+  private SmbFile route;
+  private boolean reconnect;
+  private NtlmPasswordAuthentication auth;
 }
