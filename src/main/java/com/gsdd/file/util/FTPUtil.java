@@ -95,7 +95,7 @@ public final class FTPUtil {
     try {
       FTPFile[] files = client.listDirectories(ftpDir);
       if (!ValidatorUtil.isNullOrEmpty(files)) {
-        check = ByteConversor.getMinAvailableSize(files[NumericConstants.ZERO].getSize(), minSize);
+        check = ByteConversor.MIN_AVAILABLE_SIZE.test(files[NumericConstants.ZERO].getSize(), minSize);
       }
     } catch (Exception e) {
       throw new TechnicalException(e);

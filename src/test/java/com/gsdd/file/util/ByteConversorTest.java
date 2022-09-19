@@ -25,12 +25,12 @@ class ByteConversorTest {
 
   @ParameterizedTest
   @CsvSource({"10000,8000", "10000,10000"})
-  void getMinAvailableSizeTrueTest(long value, long minAvailable) {
-    Assertions.assertTrue(ByteConversor.getMinAvailableSize(value, minAvailable));
+  void testMinAvailableSizeTrue(long value, long minAvailable) {
+    Assertions.assertTrue(ByteConversor.MIN_AVAILABLE_SIZE.test(value, minAvailable));
   }
 
   @Test
-  void getMinAvailableSizeFalseTest() {
-    Assertions.assertFalse(ByteConversor.getMinAvailableSize(EIGHT_THOUSAND, TEN_THOUSAND));
+  void testMinAvailableSizeFalse() {
+    Assertions.assertFalse(ByteConversor.MIN_AVAILABLE_SIZE.test(EIGHT_THOUSAND, TEN_THOUSAND));
   }
 }

@@ -66,7 +66,7 @@ public final class SMBUtil {
    */
   public static boolean checkAvailableSpaceOnDir(UploadableSMBFile smbo, Long minDirSize) {
     try {
-      return ByteConversor.getMinAvailableSize(smbo.getRoute().getDiskFreeSpace(), minDirSize);
+      return ByteConversor.MIN_AVAILABLE_SIZE.test(smbo.getRoute().getDiskFreeSpace(), minDirSize);
     } catch (Exception smbe) {
       throw new TechnicalException(smbe);
     }

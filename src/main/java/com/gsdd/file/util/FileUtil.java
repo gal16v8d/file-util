@@ -52,8 +52,8 @@ public final class FileUtil {
    */
   public static boolean checkAvailableSpaceOnDir(String route, Long minDirSize) {
     try {
-      return ByteConversor.getMinAvailableSize(
-          generateFileFromRoute(route).getFreeSpace(), minDirSize);
+      return ByteConversor.MIN_AVAILABLE_SIZE.test(generateFileFromRoute(route).getFreeSpace(),
+          minDirSize);
     } catch (Exception e) {
       throw new TechnicalException(e);
     }
