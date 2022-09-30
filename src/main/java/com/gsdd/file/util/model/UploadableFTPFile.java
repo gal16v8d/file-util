@@ -16,5 +16,4 @@ public class UploadableFTPFile extends UploadableFile {
   private String server;
   private int port;
   private boolean enableReply;
-
 }

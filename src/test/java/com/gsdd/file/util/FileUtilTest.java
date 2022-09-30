@@ -1,5 +1,7 @@
 package com.gsdd.file.util;
 
+import com.gsdd.constants.NumericConstants;
+import com.gsdd.exception.TechnicalException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,8 +19,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.gsdd.constants.NumericConstants;
-import com.gsdd.exception.TechnicalException;
 
 @ExtendWith(MockitoExtension.class)
 class FileUtilTest {
@@ -52,8 +52,8 @@ class FileUtilTest {
 
   @Test
   void checkAvailableSpaceOnDirExcTest() {
-    Assertions.assertThrows(TechnicalException.class,
-        () -> FileUtil.checkAvailableSpaceOnDir(null, EIGHT_THOUSAND));
+    Assertions.assertThrows(
+        TechnicalException.class, () -> FileUtil.checkAvailableSpaceOnDir(null, EIGHT_THOUSAND));
   }
 
   private void assertDirectoryContent(String filePath, int filesOnDirLength) {
@@ -155,8 +155,9 @@ class FileUtilTest {
   void zipFileEmptyTest(@TempDir Path tempDir) throws IOException {
     String filePath = getFilePath(true, tempDir);
     File[] filesOnDir = new File(filePath).listFiles();
-    boolean zip = FileUtil.zipFile(filePath + File.separator + TEST_ZIP,
-        filesOnDir[0].getAbsolutePath(), 4096);
+    boolean zip =
+        FileUtil.zipFile(
+            filePath + File.separator + TEST_ZIP, filesOnDir[0].getAbsolutePath(), 4096);
     File f = new File(filePath + File.separator + TEST_ZIP);
     Assertions.assertTrue(f.exists());
     Assertions.assertTrue(f.isFile());
@@ -166,8 +167,8 @@ class FileUtilTest {
   @Test
   void zipFileUsingPassExcTest(@TempDir Path tempDir) throws IOException {
     String filePath = tempDir.toFile().getAbsolutePath() + File.separator + TEST_ZIP;
-    Assertions.assertThrows(TechnicalException.class,
-        () -> FileUtil.zipFileUsingPass(filePath, null, CYPHER));
+    Assertions.assertThrows(
+        TechnicalException.class, () -> FileUtil.zipFileUsingPass(filePath, null, CYPHER));
   }
 
   @Test
@@ -175,8 +176,9 @@ class FileUtilTest {
     String filePath = getFilePath(true, tempDir);
     File f = new File(filePath + File.separator + TEST_1 + TXT);
     writeOnFile(f);
-    boolean zip = FileUtil.zipFile(filePath + File.separator + TEST_ZIP,
-        filePath + File.separator + TEST_1 + TXT, 4096);
+    boolean zip =
+        FileUtil.zipFile(
+            filePath + File.separator + TEST_ZIP, filePath + File.separator + TEST_1 + TXT, 4096);
     File fz = new File(filePath + File.separator + TEST_ZIP);
     Assertions.assertTrue(fz.exists());
     Assertions.assertTrue(fz.isFile());
@@ -213,7 +215,7 @@ class FileUtilTest {
 
   private void writeOnFile(File f) throws IOException {
     try (FileOutputStream fos = new FileOutputStream(f);
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));) {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos)); ) {
       for (int i = 0; i < NumericConstants.TEN; i++) {
         bw.write(TEST_1 + TXT);
         bw.newLine();

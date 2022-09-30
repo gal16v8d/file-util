@@ -19,5 +19,4 @@ public class UploadableSMBFile extends UploadableFile {
   private SmbFile route;
   private boolean reconnect;
   private NtlmPasswordAuthentication auth;
-
 }

@@ -1,5 +1,11 @@
 package com.gsdd.file.util;
 
+import com.gsdd.constants.FileConstants;
+import com.gsdd.constants.GralConstants;
+import com.gsdd.constants.NumericConstants;
+import com.gsdd.exception.TechnicalException;
+import com.gsdd.file.util.model.UploadableFTPFile;
+import com.gsdd.validatorutil.ValidatorUtil;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,19 +20,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import com.gsdd.constants.FileConstants;
-import com.gsdd.constants.GralConstants;
-import com.gsdd.constants.NumericConstants;
-import com.gsdd.exception.TechnicalException;
-import com.gsdd.file.util.model.UploadableFTPFile;
-import com.gsdd.validatorutil.ValidatorUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -67,9 +67,9 @@ public final class FTPUtil {
 
   /**
    * Check directory if not exists it try to create it.
-   * 
+   *
    * @see <a href=
-   *      "http://www.codejava.net/java-se/networking/ftp/java-ftp-create-directory-example">codejava.net</a>
+   *     "http://www.codejava.net/java-se/networking/ftp/java-ftp-create-directory-example">codejava.net</a>
    * @since 1.0
    * @param ftpo connection data
    * @param client
@@ -95,7 +95,7 @@ public final class FTPUtil {
     try {
       FTPFile[] files = client.listDirectories(ftpDir);
       if (!ValidatorUtil.isNullOrEmpty(files)) {
-        check = ByteConversor.getMinAvailableSize(files[NumericConstants.ZERO].getSize(), minSize);
+        check = ByteConversor.MIN_AVAILABLE_SIZE.test(files[NumericConstants.ZERO].getSize(), minSize);
       }
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -105,7 +105,7 @@ public final class FTPUtil {
 
   /**
    * Get files on a directory sorted by last modification.
-   * 
+   *
    * @param client
    * @param route
    * @return
@@ -113,8 +113,10 @@ public final class FTPUtil {
   public static List<FTPFile> getFilesSortedByLastModification(FTPClient client, String route) {
     List<FTPFile> ftpFiles = new ArrayList<>();
     try {
-      ftpFiles = Arrays.asList(getFilesFromDir(client, route)).stream()
-          .filter(ftpFile -> !ftpFile.isDirectory()).collect(Collectors.toList());
+      ftpFiles =
+          Arrays.asList(getFilesFromDir(client, route)).stream()
+              .filter(ftpFile -> !ftpFile.isDirectory())
+              .collect(Collectors.toList());
       Comparator<FTPFile> ftpFileComparator =
           (FTPFile p1, FTPFile p2) -> p1.getTimestamp().compareTo(p2.getTimestamp());
       Collections.sort(ftpFiles, ftpFileComparator);
@@ -126,9 +128,9 @@ public final class FTPUtil {
 
   /**
    * Transfer files through FTP using inputstream
-   * 
+   *
    * @see <a href=
-   *      "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example">codejava.net</a>
+   *     "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example">codejava.net</a>
    * @param client
    * @param route
    * @param ftpRoute
@@ -145,9 +147,9 @@ public final class FTPUtil {
   /**
    * Transfer files through FTP using outputstream and sends noop for avoid disconnection, this
    * method should be used for big files.
-   * 
+   *
    * @see <a href=
-   *      "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example">codejava.net</a>
+   *     "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example">codejava.net</a>
    * @param ftpo
    * @param client
    * @param route
@@ -156,8 +158,13 @@ public final class FTPUtil {
    * @param printStep
    * @return
    */
-  public static boolean transferFileOS(UploadableFTPFile ftpo, FTPClient client, String route,
-      String ftpRoute, int transferSpeed, int printStep) {
+  public static boolean transferFileOS(
+      UploadableFTPFile ftpo,
+      FTPClient client,
+      String route,
+      String ftpRoute,
+      int transferSpeed,
+      int printStep) {
     try (InputStream is = new FileInputStream(new File(route));
         OutputStream os = client.storeFileStream(ftpRoute)) {
       byte[] bytesIn = new byte[transferSpeed];
@@ -183,9 +190,9 @@ public final class FTPUtil {
 
   /**
    * It allows to get/download a file from FTP.
-   * 
+   *
    * @see <a href=
-   *      "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-download-tutorial-and-example">codejava.net</a>
+   *     "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-download-tutorial-and-example">codejava.net</a>
    * @param client
    * @param route
    * @param ftpRoute
@@ -205,7 +212,7 @@ public final class FTPUtil {
 
   /**
    * Delete 0B size file in a directory.
-   * 
+   *
    * @param client
    * @param directory
    */
@@ -224,9 +231,9 @@ public final class FTPUtil {
 
   /**
    * Allows to delete the oldest files in a directory.
-   * 
+   *
    * @see <a href=
-   *      "http://www.codejava.net/java-se/networking/ftp/delete-a-file-on-a-ftp-server">codejava.net</a>
+   *     "http://www.codejava.net/java-se/networking/ftp/delete-a-file-on-a-ftp-server">codejava.net</a>
    * @param client
    * @param directory
    * @return
@@ -254,7 +261,7 @@ public final class FTPUtil {
 
   /**
    * Get list of files from a directory.
-   * 
+   *
    * @param client
    * @param route
    * @return
@@ -266,7 +273,7 @@ public final class FTPUtil {
 
   /**
    * Show the FTP messages just if logger is at INFO level.
-   * 
+   *
    * @param ftpo
    * @param cliente
    */
@@ -283,7 +290,7 @@ public final class FTPUtil {
 
   /**
    * Shows the progress for upload operation just if log is at INFO level
-   * 
+   *
    * @param ftpRoute
    * @param sum
    */
@@ -297,5 +304,4 @@ public final class FTPUtil {
       log.info("{}", progress);
     }
   }
-
 }

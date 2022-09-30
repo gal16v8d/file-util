@@ -1,5 +1,7 @@
 package com.gsdd.file.util;
 
+import com.gsdd.constants.NumericConstants;
+import com.gsdd.exception.TechnicalException;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,15 +16,13 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import org.apache.commons.io.IOUtils;
-import com.gsdd.constants.NumericConstants;
-import com.gsdd.exception.TechnicalException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+import org.apache.commons.io.IOUtils;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,7 +30,7 @@ public final class FileUtil {
 
   /**
    * Check if dir exists, and create it if necessary.
-   * 
+   *
    * @param route
    * @return
    */
@@ -45,14 +45,14 @@ public final class FileUtil {
 
   /**
    * Check the available size on dir vs what we need to store on it.
-   * 
+   *
    * @param route
    * @param minDirSize minimum size for allow store.
    * @return
    */
   public static boolean checkAvailableSpaceOnDir(String route, Long minDirSize) {
     try {
-      return ByteConversor.getMinAvailableSize(generateFileFromRoute(route).getFreeSpace(),
+      return ByteConversor.MIN_AVAILABLE_SIZE.test(generateFileFromRoute(route).getFreeSpace(),
           minDirSize);
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -61,14 +61,15 @@ public final class FileUtil {
 
   /**
    * Delete 0B size files.
-   * 
+   *
    * @param route
    */
   public static void deleteEmptyFiles(String route) {
     try {
       File fr = generateFileFromRoute(route);
       File[] filesOnDir = getFilesFromDir(fr);
-      Stream.of(filesOnDir).filter(file -> file.isFile() && file.length() == NumericConstants.ZERO)
+      Stream.of(filesOnDir)
+          .filter(file -> file.isFile() && file.length() == NumericConstants.ZERO)
           .forEach(FileUtil::deleteFile);
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -84,7 +85,7 @@ public final class FileUtil {
 
   /**
    * Allow to delete the oldests files from route.
-   * 
+   *
    * @param route
    * @param backup how many files preserve
    * @return
@@ -113,7 +114,8 @@ public final class FileUtil {
   public static File getLastModifiedFile(String ruta) {
     try {
       List<File> filesOnDir = getFilesSortedByLastModification(ruta);
-      return !filesOnDir.isEmpty() ? filesOnDir.get(filesOnDir.size() - NumericConstants.ONE)
+      return !filesOnDir.isEmpty()
+          ? filesOnDir.get(filesOnDir.size() - NumericConstants.ONE)
           : null;
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -152,7 +154,7 @@ public final class FileUtil {
 
   /**
    * Zip files.
-   * 
+   *
    * @since 1.0
    * @param zipName name for zipped file.
    * @param fileName file to compress.
@@ -182,7 +184,7 @@ public final class FileUtil {
 
   /**
    * Unzip a zipped file
-   * 
+   *
    * @param inputZip zipped file.
    * @param outDir output for files.
    * @param byteBuffer buffer for unzip.
@@ -198,8 +200,8 @@ public final class FileUtil {
         fos = new FileOutputStream(fileExtracted);
         byte[] buffer = new byte[byteBuffer];
         int read;
-        while ((read =
-            zis.read(buffer, NumericConstants.ZERO, buffer.length)) != NumericConstants.ZERO) {
+        while ((read = zis.read(buffer, NumericConstants.ZERO, buffer.length))
+            != NumericConstants.ZERO) {
           fos.write(buffer, NumericConstants.ZERO, read);
         }
         fos.flush();

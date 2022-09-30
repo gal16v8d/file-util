@@ -21,5 +21,4 @@ public final class FileConstants {
   public static String[] getByteUnits() {
     return BYTE_UNITS;
   }
-
 }

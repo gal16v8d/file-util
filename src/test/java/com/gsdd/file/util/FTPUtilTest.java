@@ -1,5 +1,8 @@
 package com.gsdd.file.util;
 
+import com.gsdd.constants.FileConstants;
+import com.gsdd.exception.TechnicalException;
+import com.gsdd.file.util.model.UploadableFTPFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,15 +25,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.gsdd.constants.FileConstants;
-import com.gsdd.exception.TechnicalException;
-import com.gsdd.file.util.model.UploadableFTPFile;
 
 @ExtendWith(MockitoExtension.class)
 class FTPUtilTest {
 
-  @Mock
-  private FTPClient ftpClient;
+  @Mock private FTPClient ftpClient;
   private static final String DIR_TEST = "Test";
   private static final String[] REPLY_DATA = {"This", "is a", "test"};
 
@@ -67,8 +66,8 @@ class FTPUtilTest {
   @Test
   public void checkDirectoryExcTest() throws IOException {
     Mockito.doThrow(new IOException()).when(ftpClient).retrieveFileStream(DIR_TEST);
-    Assertions.assertThrows(TechnicalException.class,
-        () -> FTPUtil.checkDirectory(null, ftpClient, DIR_TEST));
+    Assertions.assertThrows(
+        TechnicalException.class, () -> FTPUtil.checkDirectory(null, ftpClient, DIR_TEST));
   }
 
   @Test
@@ -99,8 +98,8 @@ class FTPUtilTest {
       Mockito.doReturn(REPLY_DATA).when(ftpClient).getReplyStrings();
     }
     Mockito.doReturn(true).when(ftpClient).makeDirectory(DIR_TEST);
-    Assertions
-        .assertTrue(FTPUtil.checkDirectory(getFTPFileInstance(withReplyData), ftpClient, DIR_TEST));
+    Assertions.assertTrue(
+        FTPUtil.checkDirectory(getFTPFileInstance(withReplyData), ftpClient, DIR_TEST));
     Mockito.verify(is).close();
   }
 
@@ -129,9 +128,12 @@ class FTPUtilTest {
 
   @Test
   public void deleteEmptyFilesNoZeroSizeListTest() throws IOException {
-    List<FTPFile> ftpFiles = Stream.of(arrangeFTPFile(false))
-        .filter(ftpFile -> ftpFile.getSize() > 0L).collect(Collectors.toList());
-    Mockito.doReturn(ftpFiles.toArray(new FTPFile[ftpFiles.size()])).when(ftpClient)
+    List<FTPFile> ftpFiles =
+        Stream.of(arrangeFTPFile(false))
+            .filter(ftpFile -> ftpFile.getSize() > 0L)
+            .collect(Collectors.toList());
+    Mockito.doReturn(ftpFiles.toArray(new FTPFile[ftpFiles.size()]))
+        .when(ftpClient)
         .listFiles(Mockito.anyString());
     FTPUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
     Mockito.verify(ftpClient).listFiles(Mockito.anyString());
@@ -175,5 +177,4 @@ class FTPUtilTest {
     file.setTimestamp(Calendar.getInstance());
     return file;
   }
-
 }

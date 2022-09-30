@@ -1,5 +1,10 @@
 package com.gsdd.file.util;
 
+import com.gsdd.constants.FileConstants;
+import com.gsdd.constants.GralConstants;
+import com.gsdd.constants.NumericConstants;
+import com.gsdd.exception.TechnicalException;
+import com.gsdd.file.util.model.UploadableSMBFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -8,12 +13,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.io.IOUtils;
-import com.gsdd.constants.FileConstants;
-import com.gsdd.constants.GralConstants;
-import com.gsdd.constants.NumericConstants;
-import com.gsdd.exception.TechnicalException;
-import com.gsdd.file.util.model.UploadableSMBFile;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -21,6 +20,7 @@ import jcifs.smb.SmbFileOutputStream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -32,7 +32,7 @@ public final class SMBUtil {
 
   /**
    * Check if dir exists, and create it if necessary.
-   * 
+   *
    * @param smbo
    * @return
    */
@@ -59,14 +59,14 @@ public final class SMBUtil {
 
   /**
    * Check the available size on dir vs what we need to store on it.
-   * 
+   *
    * @param smbo
    * @param minDirSize minimum size for allow store.
    * @return
    */
   public static boolean checkAvailableSpaceOnDir(UploadableSMBFile smbo, Long minDirSize) {
     try {
-      return ByteConversor.getMinAvailableSize(smbo.getRoute().getDiskFreeSpace(), minDirSize);
+      return ByteConversor.MIN_AVAILABLE_SIZE.test(smbo.getRoute().getDiskFreeSpace(), minDirSize);
     } catch (Exception smbe) {
       throw new TechnicalException(smbe);
     }
@@ -74,7 +74,7 @@ public final class SMBUtil {
 
   /**
    * Delete 0B size files.
-   * 
+   *
    * @param smbo
    */
   public static void deleteEmptyFiles(UploadableSMBFile smbo) {
@@ -92,7 +92,7 @@ public final class SMBUtil {
 
   /**
    * Allow to delete the oldests files from route.
-   * 
+   *
    * @param smbo
    * @return
    */
@@ -116,15 +116,15 @@ public final class SMBUtil {
 
   /**
    * Allows to transfer a file using SMB.
-   * 
+   *
    * @param smbf smb file
    * @param file local file
    * @param transferSpeed how many bytes to read/transfer
    * @param printStep for print the action
    * @return
    */
-  public static boolean transferFile(UploadableSMBFile smbf, String file, Integer transferSpeed,
-      Integer printStep) {
+  public static boolean transferFile(
+      UploadableSMBFile smbf, String file, Integer transferSpeed, Integer printStep) {
     SmbFileOutputStream smbos = null;
     FileInputStream fis = null;
     try {
@@ -179,7 +179,7 @@ public final class SMBUtil {
 
   /**
    * Shows the progress for upload operation just if log is at INFO level
-   * 
+   *
    * @param smbFile
    * @param sum
    */
@@ -196,7 +196,7 @@ public final class SMBUtil {
 
   /**
    * Try to reconnect with no credentials.
-   * 
+   *
    * @param smbo
    * @return
    */
@@ -225,5 +225,4 @@ public final class SMBUtil {
   private static SmbFile[] getFilesFromDir(UploadableSMBFile smbf) throws SmbException {
     return Optional.ofNullable(smbf.getRoute().listFiles()).orElseGet(() -> new SmbFile[0]);
   }
-
 }

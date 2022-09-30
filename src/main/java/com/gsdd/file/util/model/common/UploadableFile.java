@@ -16,5 +16,4 @@ public class UploadableFile implements Serializable {
   private String user;
   private String pass;
   private String encoding;
-
 }

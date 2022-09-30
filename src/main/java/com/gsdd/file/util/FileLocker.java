@@ -1,14 +1,14 @@
 package com.gsdd.file.util;
 
+import com.gsdd.constants.FileConstants;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import org.apache.commons.io.IOUtils;
-import com.gsdd.constants.FileConstants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 @Slf4j
 @Getter
@@ -20,8 +20,7 @@ public class FileLocker {
   public boolean isAppActive() {
     boolean response = true;
     File file = new File(appName + FileConstants.FILE_EXT);
-    try (
-        FileChannel channel =
+    try (FileChannel channel =
             new RandomAccessFile(file, FileConstants.FILE_PERMISSION).getChannel();
         FileLock lock = channel.tryLock()) {
       if (lock == null) {
@@ -59,5 +58,4 @@ public class FileLocker {
       FileUtil.deleteFile(file);
     }
   }
-
 }
