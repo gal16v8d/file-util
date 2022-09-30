@@ -55,7 +55,7 @@
 		<mockito.version>4.7.0</mockito.version>
 		<!-- Logger test -->
 		<log4j.version>2.18.0</log4j.version>
-		<validator-util.version>2.0.1</validator-util.version>
+		<validator-util.version>2.0.2</validator-util.version>
 	</properties>
 
 
