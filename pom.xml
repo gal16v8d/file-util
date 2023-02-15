@@ -2,10 +2,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.gsdd</groupId>
+		<artifactId>gsdd-parent</artifactId>
+		<version>1.0.1</version>
+	</parent>
 
-	<groupId>com.gsdd</groupId>
 	<artifactId>file-util</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.2</version>
 	<packaging>jar</packaging>
 
 	<name>file-util</name>
@@ -15,47 +20,18 @@
 
 
 	<properties>
-		<!-- Gral settings -->
-		<project.encoding>UTF-8</project.encoding>
-		<project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-		<project.build.targetEncoding>${project.encoding}</project.build.targetEncoding>
-		<project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-		<java.version>17</java.version>
-
-		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
-		<mvn.compiler.plugin.version>3.10.1</mvn.compiler.plugin.version>
-		<mvn.jacoco.plugin.version>0.8.8</mvn.jacoco.plugin.version>
-		<mvn.failsafe.plugin.version>3.0.0-M5</mvn.failsafe.plugin.version>
-		<mvn.surefire.plugin.version>3.0.0-M5</mvn.surefire.plugin.version>
-		<mvn.javadoc.plugin.version>3.3.2</mvn.javadoc.plugin.version>
-		<mvn.spotless.plugin.version>2.22.1</mvn.spotless.plugin.version>
-		<mvn.checkstyle.plugin.version>3.1.2</mvn.checkstyle.plugin.version>
-		<mvn.dependency-check.plugin.version>7.1.0</mvn.dependency-check.plugin.version>
-		<mvn.dependency.plugin.version>3.3.0</mvn.dependency.plugin.version>
-		<mvn.source.plugin.version>3.2.1</mvn.source.plugin.version>
-
 		<!-- If true skips UT test execution -->
 		<skip.unit.tests>false</skip.unit.tests>
 		<!-- If true skips IT test execution -->
 		<skip.integration.tests>false</skip.integration.tests>
 
-		<checkstyle.version>10.1</checkstyle.version>
-
-		<lombok.version>1.18.24</lombok.version>
-		<slf4j.version>1.7.36</slf4j.version>
 		<zip4j.version>1.3.2</zip4j.version>
 		<jcifs.version>1.3.17</jcifs.version>
 		<jcabi.version>1.6.1</jcabi.version>
 		<commons.net.version>3.6</commons.net.version>
 		<commons.io.version>2.11.0</commons.io.version>
 		<commons.codec.version>1.9</commons.codec.version>
-		<!-- test dependencies -->
-		<junit.version>5.9.1</junit.version>
-		<mockito.version>4.10.0</mockito.version>
-		<!-- Logger test -->
-		<log4j.version>2.19.0</log4j.version>
-		<validator-util.version>2.0.2</validator-util.version>
+		<validator-util.version>2.0.3</validator-util.version>
 	</properties>
 
 
@@ -63,21 +39,18 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -85,35 +58,30 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>
@@ -160,35 +128,16 @@
 	</dependencies>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>${mvn.checkstyle.plugin.version}</version>
-					<dependencies>
-						<dependency>
-							<groupId>com.puppycrawl.tools</groupId>
-							<artifactId>checkstyle</artifactId>
-							<version>${checkstyle.version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${mvn.compiler.plugin.version}</version>
 			</plugin>
 
 			<!-- Used for unit tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${mvn.surefire.plugin.version}</version>
 				<configuration>
 					<skipTests>${skip.unit.tests}</skipTests>
 					<!-- Excludes integration tests when unit tests are run. -->
@@ -201,7 +150,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>${mvn.failsafe.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>integration-tests</id>
@@ -219,7 +167,6 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${mvn.jacoco.plugin.version}</version>
 				<configuration>
 					<excludes>
 						<exclude>**/constants/**</exclude>
@@ -292,7 +239,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${mvn.javadoc.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -306,7 +252,6 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>${mvn.spotless.plugin.version}</version>
 				<configuration>
 					<!-- optional: limit format enforcement to just the files changed by
 						this feature branch  -->
@@ -347,7 +292,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
-					<encoding>UTF-8</encoding>
 					<consoleOutput>true</consoleOutput>
 					<failsOnError>true</failsOnError>
 					<linkXRef>false</linkXRef>
@@ -366,7 +310,6 @@
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>
-				<version>${mvn.dependency-check.plugin.version}</version>
 				<configuration>
 					<failBuildOnCVSS>8</failBuildOnCVSS>
 					<suppressionFile>${project.basedir}/dc-suppressions.xml</suppressionFile>
@@ -384,7 +327,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>${mvn.dependency.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -402,7 +344,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>${mvn.source.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
