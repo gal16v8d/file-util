@@ -8,7 +8,6 @@ import java.nio.channels.FileLock;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 @Slf4j
 @Getter
@@ -42,7 +41,7 @@ public class FileLocker {
         log.error(e.getMessage(), e);
       }
     }
-    IOUtils.closeQuietly(channel);
+    IoUtils.closeQuietly(channel);
   }
 
   @AllArgsConstructor

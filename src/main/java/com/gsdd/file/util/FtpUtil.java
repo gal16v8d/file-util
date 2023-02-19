@@ -4,7 +4,7 @@ import com.gsdd.constants.FileConstants;
 import com.gsdd.constants.GralConstants;
 import com.gsdd.constants.NumericConstants;
 import com.gsdd.exception.TechnicalException;
-import com.gsdd.file.util.model.UploadableFTPFile;
+import com.gsdd.file.util.model.UploadableFtpFile;
 import com.gsdd.validatorutil.ValidatorUtil;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,9 +30,9 @@ import org.apache.commons.net.ftp.FTPReply;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FTPUtil {
+public final class FtpUtil {
 
-  public static boolean connect(UploadableFTPFile ftpo, FTPClient client) {
+  public static boolean connect(UploadableFtpFile ftpo, FTPClient client) {
     try {
       client.connect(ftpo.getServer(), ftpo.getPort());
       int replyCode = client.getReplyCode();
@@ -46,7 +46,7 @@ public final class FTPUtil {
       client.enterLocalPassiveMode();
       client.setFileType(FTP.BINARY_FILE_TYPE);
       // control FTP timeout
-      client.setControlKeepAliveTimeout(NumericConstants.MINUS_ONE);
+      client.setControlKeepAliveTimeout(null);
       client.setKeepAlive(true);
       return true;
     } catch (Exception ioe) {
@@ -76,7 +76,7 @@ public final class FTPUtil {
    * @param ftpDir directory to check
    * @return true if exists.
    */
-  public static boolean checkDirectory(UploadableFTPFile ftpo, FTPClient client, String ftpDir) {
+  public static boolean checkDirectory(UploadableFtpFile ftpo, FTPClient client, String ftpDir) {
     boolean exists = true;
     try (InputStream is = client.retrieveFileStream(ftpDir)) {
       int returnCode = client.getReplyCode();
@@ -95,7 +95,8 @@ public final class FTPUtil {
     try {
       FTPFile[] files = client.listDirectories(ftpDir);
       if (!ValidatorUtil.isNullOrEmpty(files)) {
-        check = ByteConversor.MIN_AVAILABLE_SIZE.test(files[NumericConstants.ZERO].getSize(), minSize);
+        check =
+            ByteConversor.MIN_AVAILABLE_SIZE.test(files[NumericConstants.ZERO].getSize(), minSize);
       }
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -159,7 +160,7 @@ public final class FTPUtil {
    * @return
    */
   public static boolean transferFileOS(
-      UploadableFTPFile ftpo,
+      UploadableFtpFile ftpo,
       FTPClient client,
       String route,
       String ftpRoute,
@@ -277,7 +278,7 @@ public final class FTPUtil {
    * @param ftpo
    * @param cliente
    */
-  private static void showServerReply(UploadableFTPFile ftpo, FTPClient client) {
+  private static void showServerReply(UploadableFtpFile ftpo, FTPClient client) {
     if (log.isInfoEnabled() && ftpo.isEnableReply()) {
       String[] replies = client.getReplyStrings();
       if (!ValidatorUtil.isNullOrEmpty(replies)) {

@@ -10,20 +10,11 @@
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d %5p [%t] (%c) - %m%n" />
 		</Console>
-
-		<!-- File Appender 
-		<RollingFile name="File" fileName="${basePath}/${baseProyectName}.log"
-			filePattern="${basePath}/${baseProyectName}.log-%i.gz" immediateFlush="true">
-			<PatternLayout pattern="%d %5p [%t] (%c) - %m%n" />
-			<CronTriggeringPolicy schedule="0 0 0/1 * * ? *" />
-			<DefaultRolloverStrategy max="24" /> 
-		</RollingFile> -->
 	</Appenders>
 	
 	<Loggers>
 		<Root level="OFF">
 			<AppenderRef ref="Console" />
-			<!-- <AppenderRef ref="File" /> -->
 		</Root>
 	</Loggers>
 </Configuration>

@@ -2,7 +2,7 @@ package com.gsdd.file.util;
 
 import com.gsdd.constants.FileConstants;
 import com.gsdd.exception.TechnicalException;
-import com.gsdd.file.util.model.UploadableFTPFile;
+import com.gsdd.file.util.model.UploadableFtpFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FTPUtilTest {
+class FtpUtilTest {
 
   @Mock private FTPClient ftpClient;
   private static final String DIR_TEST = "Test";
@@ -41,7 +41,7 @@ class FTPUtilTest {
   @Test
   public void disconnectFTPWhenNoConnectedTest() throws IOException {
     Mockito.doReturn(false).when(ftpClient).isConnected();
-    FTPUtil.disconnect(ftpClient);
+    FtpUtil.disconnect(ftpClient);
     Mockito.verify(ftpClient, Mockito.never()).logout();
     Mockito.verify(ftpClient, Mockito.never()).disconnect();
   }
@@ -51,7 +51,7 @@ class FTPUtilTest {
     Mockito.doReturn(true).when(ftpClient).isConnected();
     Mockito.doReturn(true).when(ftpClient).logout();
     Mockito.doNothing().when(ftpClient).disconnect();
-    FTPUtil.disconnect(ftpClient);
+    FtpUtil.disconnect(ftpClient);
     Mockito.verify(ftpClient).logout();
     Mockito.verify(ftpClient).disconnect();
   }
@@ -60,21 +60,21 @@ class FTPUtilTest {
   public void disconnectFTPExcTest() throws IOException {
     Mockito.doReturn(true).when(ftpClient).isConnected();
     Mockito.doThrow(new IOException()).when(ftpClient).logout();
-    Assertions.assertThrows(TechnicalException.class, () -> FTPUtil.disconnect(ftpClient));
+    Assertions.assertThrows(TechnicalException.class, () -> FtpUtil.disconnect(ftpClient));
   }
 
   @Test
   public void checkDirectoryExcTest() throws IOException {
     Mockito.doThrow(new IOException()).when(ftpClient).retrieveFileStream(DIR_TEST);
     Assertions.assertThrows(
-        TechnicalException.class, () -> FTPUtil.checkDirectory(null, ftpClient, DIR_TEST));
+        TechnicalException.class, () -> FtpUtil.checkDirectory(null, ftpClient, DIR_TEST));
   }
 
   @Test
   public void checkDirectoryISTest(@Mock InputStream is) throws IOException {
     Mockito.doNothing().when(is).close();
     Mockito.doReturn(is).when(ftpClient).retrieveFileStream(DIR_TEST);
-    Assertions.assertTrue(FTPUtil.checkDirectory(null, ftpClient, DIR_TEST));
+    Assertions.assertTrue(FtpUtil.checkDirectory(null, ftpClient, DIR_TEST));
     Mockito.verify(is).close();
   }
 
@@ -83,7 +83,7 @@ class FTPUtilTest {
     Mockito.doReturn(null).when(ftpClient).retrieveFileStream(DIR_TEST);
     Mockito.doReturn(FileConstants.FTP550).when(ftpClient).getReplyCode();
     Mockito.doReturn(true).when(ftpClient).makeDirectory(DIR_TEST);
-    Assertions.assertTrue(FTPUtil.checkDirectory(getFTPFileInstance(false), ftpClient, DIR_TEST));
+    Assertions.assertTrue(FtpUtil.checkDirectory(getFTPFileInstance(false), ftpClient, DIR_TEST));
   }
 
   @ParameterizedTest
@@ -93,18 +93,18 @@ class FTPUtilTest {
     Mockito.doReturn(is).when(ftpClient).retrieveFileStream(DIR_TEST);
     Mockito.doReturn(FileConstants.FTP550).when(ftpClient).getReplyCode();
     if (withReplyData) {
-      Logger rootLogger = (Logger) LogManager.getLogger(FTPUtil.class);
+      Logger rootLogger = (Logger) LogManager.getLogger(FtpUtil.class);
       rootLogger.setLevel(Level.INFO);
       Mockito.doReturn(REPLY_DATA).when(ftpClient).getReplyStrings();
     }
     Mockito.doReturn(true).when(ftpClient).makeDirectory(DIR_TEST);
     Assertions.assertTrue(
-        FTPUtil.checkDirectory(getFTPFileInstance(withReplyData), ftpClient, DIR_TEST));
+        FtpUtil.checkDirectory(getFTPFileInstance(withReplyData), ftpClient, DIR_TEST));
     Mockito.verify(is).close();
   }
 
-  private UploadableFTPFile getFTPFileInstance(boolean reply) {
-    UploadableFTPFile dto = new UploadableFTPFile();
+  private UploadableFtpFile getFTPFileInstance(boolean reply) {
+    UploadableFtpFile dto = new UploadableFtpFile();
     dto.setEnableReply(reply);
     return dto;
   }
@@ -113,7 +113,7 @@ class FTPUtilTest {
   public void deleteEmptyFilesTest() throws IOException {
     Mockito.doReturn(arrangeFTPFile(true)).when(ftpClient).listFiles(Mockito.anyString());
     Mockito.doReturn(true).when(ftpClient).deleteFile(Mockito.anyString());
-    FTPUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
+    FtpUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
     Mockito.verify(ftpClient).listFiles(Mockito.anyString());
     Mockito.verify(ftpClient).deleteFile(Mockito.anyString());
   }
@@ -121,7 +121,7 @@ class FTPUtilTest {
   @Test
   public void deleteEmptyFilesWithEmptyListTest() throws IOException {
     Mockito.doReturn(arrangeFTPFile(false)).when(ftpClient).listFiles(Mockito.anyString());
-    FTPUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
+    FtpUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
     Mockito.verify(ftpClient).listFiles(Mockito.anyString());
     Mockito.verify(ftpClient, Mockito.never()).deleteFile(Mockito.anyString());
   }
@@ -135,7 +135,7 @@ class FTPUtilTest {
     Mockito.doReturn(ftpFiles.toArray(new FTPFile[ftpFiles.size()]))
         .when(ftpClient)
         .listFiles(Mockito.anyString());
-    FTPUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
+    FtpUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
     Mockito.verify(ftpClient).listFiles(Mockito.anyString());
     Mockito.verify(ftpClient, Mockito.never()).deleteFile(Mockito.anyString());
   }
@@ -144,7 +144,7 @@ class FTPUtilTest {
   public void deleteOldFilesTest() throws IOException {
     Mockito.doReturn(arrangeFTPFile(true)).when(ftpClient).listFiles(Mockito.anyString());
     Mockito.doReturn(true).when(ftpClient).deleteFile(Mockito.anyString());
-    FTPUtil.deleteOldFiles(ftpClient, DIR_TEST, 2);
+    FtpUtil.deleteOldFiles(ftpClient, DIR_TEST, 2);
     Mockito.verify(ftpClient).listFiles(Mockito.anyString());
     Mockito.verify(ftpClient, Mockito.times(2)).deleteFile(Mockito.anyString());
   }
@@ -152,7 +152,7 @@ class FTPUtilTest {
   @Test
   public void deleteOldFilesWithEmptyListTest() throws IOException {
     Mockito.doReturn(arrangeFTPFile(false)).when(ftpClient).listFiles(Mockito.anyString());
-    FTPUtil.deleteOldFiles(ftpClient, DIR_TEST, 0);
+    FtpUtil.deleteOldFiles(ftpClient, DIR_TEST, 0);
     Mockito.verify(ftpClient).listFiles(Mockito.anyString());
     Mockito.verify(ftpClient, Mockito.never()).deleteFile(Mockito.anyString());
   }

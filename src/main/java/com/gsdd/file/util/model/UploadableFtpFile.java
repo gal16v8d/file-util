@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UploadableFTPFile extends UploadableFile {
+public class UploadableFtpFile extends UploadableFile {
 
   private static final long serialVersionUID = -4986146704253121853L;
   private String server;

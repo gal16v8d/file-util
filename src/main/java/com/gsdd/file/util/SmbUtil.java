@@ -4,7 +4,7 @@ import com.gsdd.constants.FileConstants;
 import com.gsdd.constants.GralConstants;
 import com.gsdd.constants.NumericConstants;
 import com.gsdd.exception.TechnicalException;
-import com.gsdd.file.util.model.UploadableSMBFile;
+import com.gsdd.file.util.model.UploadableSmbFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -20,11 +20,10 @@ import jcifs.smb.SmbFileOutputStream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SMBUtil {
+public final class SmbUtil {
 
   public static NtlmPasswordAuthentication authenticateSMB(String user, String pass) {
     return new NtlmPasswordAuthentication(null, user, pass);
@@ -36,7 +35,7 @@ public final class SMBUtil {
    * @param smbo
    * @return
    */
-  public static boolean checkDirectory(UploadableSMBFile smbo) {
+  public static boolean checkDirectory(UploadableSmbFile smbo) {
     boolean b = false;
     try {
       String netUrl = FileConstants.SMB_URL + smbo.getUrl();
@@ -64,7 +63,7 @@ public final class SMBUtil {
    * @param minDirSize minimum size for allow store.
    * @return
    */
-  public static boolean checkAvailableSpaceOnDir(UploadableSMBFile smbo, Long minDirSize) {
+  public static boolean checkAvailableSpaceOnDir(UploadableSmbFile smbo, Long minDirSize) {
     try {
       return ByteConversor.MIN_AVAILABLE_SIZE.test(smbo.getRoute().getDiskFreeSpace(), minDirSize);
     } catch (Exception smbe) {
@@ -77,7 +76,7 @@ public final class SMBUtil {
    *
    * @param smbo
    */
-  public static void deleteEmptyFiles(UploadableSMBFile smbo) {
+  public static void deleteEmptyFiles(UploadableSmbFile smbo) {
     try {
       SmbFile[] filesOnDir = smbo.getRoute().listFiles();
       for (SmbFile file : filesOnDir) {
@@ -96,7 +95,7 @@ public final class SMBUtil {
    * @param smbo
    * @return
    */
-  public static boolean deleteOldFiles(UploadableSMBFile smbo) {
+  public static boolean deleteOldFiles(UploadableSmbFile smbo) {
     boolean deleted = false;
     try {
       List<SmbFile> smbFiles = getFilesSortedByLastModification(smbo);
@@ -124,7 +123,7 @@ public final class SMBUtil {
    * @return
    */
   public static boolean transferFile(
-      UploadableSMBFile smbf, String file, Integer transferSpeed, Integer printStep) {
+      UploadableSmbFile smbf, String file, Integer transferSpeed, Integer printStep) {
     SmbFileOutputStream smbos = null;
     FileInputStream fis = null;
     try {
@@ -153,12 +152,12 @@ public final class SMBUtil {
     } catch (Exception e) {
       throw new TechnicalException(e);
     } finally {
-      IOUtils.closeQuietly(fis);
-      IOUtils.closeQuietly(smbos);
+      IoUtils.closeQuietly(fis);
+      IoUtils.closeQuietly(smbos);
     }
   }
 
-  public static List<SmbFile> getFilesSortedByLastModification(UploadableSMBFile smbf) {
+  public static List<SmbFile> getFilesSortedByLastModification(UploadableSmbFile smbf) {
     List<SmbFile> filesOnDir = new ArrayList<>();
     List<SmbFile> smbFiles = new ArrayList<>();
     try {
@@ -200,7 +199,7 @@ public final class SMBUtil {
    * @param smbo
    * @return
    */
-  private static boolean forceReconnect(UploadableSMBFile smbo) {
+  private static boolean forceReconnect(UploadableSmbFile smbo) {
     boolean b = false;
     if (!smbo.isReconnect()) {
       smbo.setUser(null);
@@ -222,7 +221,7 @@ public final class SMBUtil {
     return b;
   }
 
-  private static SmbFile[] getFilesFromDir(UploadableSMBFile smbf) throws SmbException {
+  private static SmbFile[] getFilesFromDir(UploadableSmbFile smbf) throws SmbException {
     return Optional.ofNullable(smbf.getRoute().listFiles()).orElseGet(() -> new SmbFile[0]);
   }
 }

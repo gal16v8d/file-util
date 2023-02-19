@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UploadableSMBFile extends UploadableFile {
+public class UploadableSmbFile extends UploadableFile {
 
   private static final long serialVersionUID = 3616139956403881273L;
   private String url;

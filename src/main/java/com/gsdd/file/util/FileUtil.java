@@ -2,12 +2,10 @@ package com.gsdd.file.util;
 
 import com.gsdd.constants.NumericConstants;
 import com.gsdd.exception.TechnicalException;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +17,9 @@ import java.util.zip.ZipOutputStream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
-import org.apache.commons.io.IOUtils;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,8 +49,8 @@ public final class FileUtil {
    */
   public static boolean checkAvailableSpaceOnDir(String route, Long minDirSize) {
     try {
-      return ByteConversor.MIN_AVAILABLE_SIZE.test(generateFileFromRoute(route).getFreeSpace(),
-          minDirSize);
+      return ByteConversor.MIN_AVAILABLE_SIZE.test(
+          generateFileFromRoute(route).getFreeSpace(), minDirSize);
     } catch (Exception e) {
       throw new TechnicalException(e);
     }
@@ -136,17 +133,13 @@ public final class FileUtil {
   }
 
   public static void zipFileUsingPass(String route, List<File> filesToAdd, String pass) {
-    try {
-      // This is name and path of zip file to be created
-      ZipFile externalZipFile = new ZipFile(route);
+    // This is name and path of zip file to be created
+    try (ZipFile externalZipFile = new ZipFile(route, pass.toCharArray()); ) {
       // Now add files to the zip file
       ZipParameters parameters = new ZipParameters();
-      parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-      parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
       parameters.setEncryptFiles(true);
-      parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_STANDARD);
-      parameters.setPassword(pass);
-      externalZipFile.addFiles((ArrayList<File>) filesToAdd, parameters);
+      parameters.setEncryptionMethod(EncryptionMethod.AES);
+      externalZipFile.addFiles(filesToAdd, parameters);
     } catch (Exception e) {
       throw new TechnicalException(e);
     }
@@ -178,7 +171,7 @@ public final class FileUtil {
     } catch (Exception e) {
       throw new TechnicalException(e);
     } finally {
-      closeQuietly(fis);
+      IoUtils.closeQuietly(fis);
     }
   }
 
@@ -205,18 +198,14 @@ public final class FileUtil {
           fos.write(buffer, NumericConstants.ZERO, read);
         }
         fos.flush();
-        closeQuietly(fos);
+        IoUtils.closeQuietly(fos);
       }
       return true;
     } catch (Exception e) {
       throw new TechnicalException(e);
     } finally {
-      closeQuietly(fos);
+      IoUtils.closeQuietly(fos);
     }
-  }
-
-  public static void closeQuietly(Closeable recurso) {
-    IOUtils.closeQuietly(recurso);
   }
 
   private static File generateFileFromRoute(String path) {
