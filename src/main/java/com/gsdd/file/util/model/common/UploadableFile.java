@@ -1,5 +1,6 @@
 package com.gsdd.file.util.model.common;
 
+import java.io.Serial;
 import java.io.Serializable;
 import lombok.Generated;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import lombok.ToString;
 @ToString
 public class UploadableFile implements Serializable {
 
-  private static final long serialVersionUID = 4691510311799060770L;
+  @Serial private static final long serialVersionUID = 4691510311799060770L;
   private String user;
   private String pass;
   private String encoding;

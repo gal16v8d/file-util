@@ -140,7 +140,7 @@ class FileUtilTest {
     String filePath = getFilePath(createTempFile, tempDir);
     boolean deleted = FileUtil.deleteOldFiles(filePath, 0);
     assertDirectoryContent(filePath, 0);
-    Assertions.assertTrue(createTempFile ? deleted : !deleted);
+    Assertions.assertEquals(createTempFile, deleted);
   }
 
   @Test

@@ -7,7 +7,6 @@ import com.gsdd.exception.TechnicalException;
 import com.gsdd.file.util.model.UploadableFtpFile;
 import com.gsdd.validatorutil.ValidatorUtil;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,13 +14,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -29,7 +26,7 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class FtpUtil {
 
   public static boolean connect(UploadableFtpFile ftpo, FTPClient client) {
@@ -96,7 +93,7 @@ public final class FtpUtil {
       FTPFile[] files = client.listDirectories(ftpDir);
       if (!ValidatorUtil.isNullOrEmpty(files)) {
         check =
-            ByteConversor.MIN_AVAILABLE_SIZE.test(files[NumericConstants.ZERO].getSize(), minSize);
+            ByteConverter.MIN_AVAILABLE_SIZE.test(files[NumericConstants.ZERO].getSize(), minSize);
       }
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -115,12 +112,11 @@ public final class FtpUtil {
     List<FTPFile> ftpFiles = new ArrayList<>();
     try {
       ftpFiles =
-          Arrays.asList(getFilesFromDir(client, route)).stream()
+          Arrays.stream(getFilesFromDir(client, route))
               .filter(ftpFile -> !ftpFile.isDirectory())
               .collect(Collectors.toList());
-      Comparator<FTPFile> ftpFileComparator =
-          (FTPFile p1, FTPFile p2) -> p1.getTimestamp().compareTo(p2.getTimestamp());
-      Collections.sort(ftpFiles, ftpFileComparator);
+      Comparator<FTPFile> ftpFileComparator = Comparator.comparing(FTPFile::getTimestamp);
+      ftpFiles.sort(ftpFileComparator);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
@@ -138,7 +134,7 @@ public final class FtpUtil {
    * @return
    */
   public static boolean transferFileIS(FTPClient client, String route, String ftpRoute) {
-    try (InputStream is = new FileInputStream(new File(route))) {
+    try (InputStream is = new FileInputStream(route)) {
       return client.storeFile(ftpRoute, is);
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -166,7 +162,7 @@ public final class FtpUtil {
       String ftpRoute,
       int transferSpeed,
       int printStep) {
-    try (InputStream is = new FileInputStream(new File(route));
+    try (InputStream is = new FileInputStream(route);
         OutputStream os = client.storeFileStream(ftpRoute)) {
       byte[] bytesIn = new byte[transferSpeed];
       int read = NumericConstants.ZERO;
@@ -200,11 +196,10 @@ public final class FtpUtil {
    * @return
    */
   public static boolean receiveFile(FTPClient client, String route, String ftpRoute) {
-    boolean received = false;
-    try (FileOutputStream fos = new FileOutputStream(new File(route));
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        OutputStream os = bos) {
-      received = client.retrieveFile(ftpRoute, os);
+    boolean received;
+    try (FileOutputStream fos = new FileOutputStream(route);
+        BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+      received = client.retrieveFile(ftpRoute, bos);
     } catch (Exception e) {
       throw new TechnicalException(e);
     }
@@ -240,7 +235,7 @@ public final class FtpUtil {
    * @return
    */
   public static boolean deleteOldFiles(FTPClient client, String directory, int backup) {
-    boolean deleted = false;
+    boolean deleted;
     try {
       List<FTPFile> ftpFiles = getFilesSortedByLastModification(client, directory);
       int currentSize = ftpFiles.size();
@@ -276,7 +271,7 @@ public final class FtpUtil {
    * Show the FTP messages just if logger is at INFO level.
    *
    * @param ftpo
-   * @param cliente
+   * @param client
    */
   private static void showServerReply(UploadableFtpFile ftpo, FTPClient client) {
     if (log.isInfoEnabled() && ftpo.isEnableReply()) {
@@ -300,7 +295,7 @@ public final class FtpUtil {
       StringBuilder progress = new StringBuilder();
       progress.append(ftpRoute);
       progress.append(GralConstants.COLON);
-      progress.append(ByteConversor.readableFileSize((long) sum));
+      progress.append(ByteConverter.readableFileSize((long) sum));
       progress.append("\n");
       log.info("{}", progress);
     }

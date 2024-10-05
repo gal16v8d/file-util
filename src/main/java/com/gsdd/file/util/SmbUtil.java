@@ -8,8 +8,6 @@ import com.gsdd.file.util.model.UploadableSmbFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +15,11 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileOutputStream;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class SmbUtil {
 
   public static NtlmPasswordAuthentication authenticateSMB(String user, String pass) {
@@ -36,7 +33,7 @@ public final class SmbUtil {
    * @return
    */
   public static boolean checkDirectory(UploadableSmbFile smbo) {
-    boolean b = false;
+    boolean b;
     try {
       String netUrl = FileConstants.SMB_URL + smbo.getUrl();
       smbo.setAuth(authenticateSMB(smbo.getUser(), smbo.getPass()));
@@ -65,7 +62,7 @@ public final class SmbUtil {
    */
   public static boolean checkAvailableSpaceOnDir(UploadableSmbFile smbo, Long minDirSize) {
     try {
-      return ByteConversor.MIN_AVAILABLE_SIZE.test(smbo.getRoute().getDiskFreeSpace(), minDirSize);
+      return ByteConverter.MIN_AVAILABLE_SIZE.test(smbo.getRoute().getDiskFreeSpace(), minDirSize);
     } catch (Exception smbe) {
       throw new TechnicalException(smbe);
     }
@@ -96,7 +93,7 @@ public final class SmbUtil {
    * @return
    */
   public static boolean deleteOldFiles(UploadableSmbFile smbo) {
-    boolean deleted = false;
+    boolean deleted;
     try {
       List<SmbFile> smbFiles = getFilesSortedByLastModification(smbo);
       int currentSize = smbFiles.size();
@@ -158,18 +155,16 @@ public final class SmbUtil {
   }
 
   public static List<SmbFile> getFilesSortedByLastModification(UploadableSmbFile smbf) {
-    List<SmbFile> filesOnDir = new ArrayList<>();
     List<SmbFile> smbFiles = new ArrayList<>();
     try {
-      filesOnDir = Arrays.asList(getFilesFromDir(smbf));
+      SmbFile[] filesOnDir = getFilesFromDir(smbf);
       for (SmbFile file : filesOnDir) {
         if (!file.isDirectory()) {
           smbFiles.add(file);
         }
       }
-      Comparator<SmbFile> smbFileComparator =
-          (SmbFile p1, SmbFile p2) -> Long.compare(p1.getLastModified(), p2.getLastModified());
-      Collections.sort(smbFiles, smbFileComparator);
+      Comparator<SmbFile> smbFileComparator = Comparator.comparingLong(SmbFile::getLastModified);
+      smbFiles.sort(smbFileComparator);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
@@ -187,7 +182,7 @@ public final class SmbUtil {
       StringBuilder progress = new StringBuilder();
       progress.append(smbFile);
       progress.append(GralConstants.COLON);
-      progress.append(ByteConversor.readableFileSize((long) sum));
+      progress.append(ByteConverter.readableFileSize(sum));
       progress.append("\n");
       log.info("{}", progress);
     }

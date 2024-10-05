@@ -14,15 +14,14 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class FileUtil {
 
   /**
@@ -34,7 +33,7 @@ public final class FileUtil {
   public static boolean checkDirectory(String route) {
     try {
       File f = generateFileFromRoute(route);
-      return !f.exists() ? f.mkdirs() : true;
+      return f.exists() || f.mkdirs();
     } catch (Exception e) {
       throw new TechnicalException(e);
     }
@@ -49,7 +48,7 @@ public final class FileUtil {
    */
   public static boolean checkAvailableSpaceOnDir(String route, Long minDirSize) {
     try {
-      return ByteConversor.MIN_AVAILABLE_SIZE.test(
+      return ByteConverter.MIN_AVAILABLE_SIZE.test(
           generateFileFromRoute(route).getFreeSpace(), minDirSize);
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -75,8 +74,7 @@ public final class FileUtil {
 
   public static List<File> getFilesSortedByLastModification(String route) {
     File f = generateFileFromRoute(route);
-    Comparator<File> fileComparator =
-        (File p1, File p2) -> Long.compare(p1.lastModified(), p2.lastModified());
+    Comparator<File> fileComparator = Comparator.comparingLong(File::lastModified);
     return Stream.of(getFilesFromDir(f)).sorted(fileComparator).collect(Collectors.toList());
   }
 
@@ -88,7 +86,7 @@ public final class FileUtil {
    * @return
    */
   public static boolean deleteOldFiles(String route, int backup) {
-    boolean deleted = false;
+    boolean deleted;
     try {
       List<File> filesOnDir = getFilesSortedByLastModification(route);
       int currentSize = filesOnDir.size();

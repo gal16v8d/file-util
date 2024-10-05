@@ -45,7 +45,7 @@ public class FileLocker {
   }
 
   @AllArgsConstructor
-  public class ShutdownThread implements Runnable {
+  public static class ShutdownThread implements Runnable {
 
     private FileLock lock;
     private FileChannel channel;
