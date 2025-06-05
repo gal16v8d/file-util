@@ -9,7 +9,7 @@ import lombok.experimental.UtilityClass;
 public final class IoUtils {
 
   public static void closeQuietly(final Closeable closeable) {
-    closeQuietly(closeable, (Consumer<IOException>) null);
+    closeQuietly(closeable, null);
   }
 
   public static void closeQuietly(final Closeable closeable, final Consumer<IOException> consumer) {

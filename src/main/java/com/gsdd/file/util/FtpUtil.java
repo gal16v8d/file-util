@@ -29,14 +29,14 @@ import org.apache.commons.net.ftp.FTPReply;
 @UtilityClass
 public final class FtpUtil {
 
-  public static boolean connect(UploadableFtpFile ftpo, FTPClient client) {
+  public static boolean connect(UploadableFtpFile ftpFile, FTPClient client) {
     try {
-      client.connect(ftpo.getServer(), ftpo.getPort());
+      client.connect(ftpFile.getServer(), ftpFile.getPort());
       int replyCode = client.getReplyCode();
       if (!FTPReply.isPositiveCompletion(replyCode)) {
         return false;
       }
-      boolean success = client.login(ftpo.getUser(), ftpo.getPass());
+      boolean success = client.login(ftpFile.getUser(), ftpFile.getPass());
       if (!success) {
         return false;
       }
@@ -51,11 +51,11 @@ public final class FtpUtil {
     }
   }
 
-  public static void disconnect(FTPClient cliente) {
-    if (cliente.isConnected()) {
+  public static void disconnect(FTPClient client) {
+    if (client.isConnected()) {
       try {
-        cliente.logout();
-        cliente.disconnect();
+        client.logout();
+        client.disconnect();
       } catch (IOException ioe) {
         throw new TechnicalException(ioe);
       }
@@ -68,18 +68,18 @@ public final class FtpUtil {
    * @see <a href=
    *     "http://www.codejava.net/java-se/networking/ftp/java-ftp-create-directory-example">codejava.net</a>
    * @since 1.0
-   * @param ftpo connection data
+   * @param ftpFile connection data
    * @param client
    * @param ftpDir directory to check
    * @return true if exists.
    */
-  public static boolean checkDirectory(UploadableFtpFile ftpo, FTPClient client, String ftpDir) {
+  public static boolean checkDirectory(UploadableFtpFile ftpFile, FTPClient client, String ftpDir) {
     boolean exists = true;
     try (InputStream is = client.retrieveFileStream(ftpDir)) {
       int returnCode = client.getReplyCode();
       if (is == null || returnCode == FileConstants.FTP550) {
         exists = client.makeDirectory(ftpDir);
-        showServerReply(ftpo, client);
+        showServerReply(ftpFile, client);
       }
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -133,7 +133,7 @@ public final class FtpUtil {
    * @param ftpRoute
    * @return
    */
-  public static boolean transferFileIS(FTPClient client, String route, String ftpRoute) {
+  public static boolean transferFileIs(FTPClient client, String route, String ftpRoute) {
     try (InputStream is = new FileInputStream(route)) {
       return client.storeFile(ftpRoute, is);
     } catch (Exception e) {
@@ -147,7 +147,7 @@ public final class FtpUtil {
    *
    * @see <a href=
    *     "http://www.codejava.net/java-se/networking/ftp/java-ftp-file-upload-tutorial-and-example">codejava.net</a>
-   * @param ftpo
+   * @param ftpFile
    * @param client
    * @param route
    * @param ftpRoute
@@ -156,7 +156,7 @@ public final class FtpUtil {
    * @return
    */
   public static boolean transferFileOS(
-      UploadableFtpFile ftpo,
+      UploadableFtpFile ftpFile,
       FTPClient client,
       String route,
       String ftpRoute,
@@ -178,7 +178,7 @@ public final class FtpUtil {
         count++;
         os.flush();
       }
-      showServerReply(ftpo, client);
+      showServerReply(ftpFile, client);
       return client.completePendingCommand();
     } catch (Exception e) {
       throw new TechnicalException(e);
@@ -270,11 +270,11 @@ public final class FtpUtil {
   /**
    * Show the FTP messages just if logger is at INFO level.
    *
-   * @param ftpo
+   * @param ftpFile
    * @param client
    */
-  private static void showServerReply(UploadableFtpFile ftpo, FTPClient client) {
-    if (log.isInfoEnabled() && ftpo.isEnableReply()) {
+  private static void showServerReply(UploadableFtpFile ftpFile, FTPClient client) {
+    if (log.isInfoEnabled() && ftpFile.isEnableReply()) {
       String[] replies = client.getReplyStrings();
       if (!ValidatorUtil.isNullOrEmpty(replies)) {
         for (String aReply : replies) {

@@ -26,7 +26,7 @@ class FileUtilTest {
   private static final Long EIGHT_THOUSAND = 8000L;
   private static final String TEST_1 = "test_1_";
   private static final String TEST_ZIP = "test.zip";
-  private static final String CYPHER = "comprimido";
+  private static final String CIPHER = "comprimido";
   private static final String TXT = ".txt";
 
   @ParameterizedTest
@@ -168,7 +168,7 @@ class FileUtilTest {
   void zipFileUsingPassExcTest(@TempDir Path tempDir) throws IOException {
     String filePath = tempDir.toFile().getAbsolutePath() + File.separator + TEST_ZIP;
     Assertions.assertThrows(
-        TechnicalException.class, () -> FileUtil.zipFileUsingPass(filePath, null, CYPHER));
+        TechnicalException.class, () -> FileUtil.zipFileUsingPass(filePath, null, CIPHER));
   }
 
   @Test
@@ -199,7 +199,7 @@ class FileUtilTest {
     filesToAdd.add(new File(filePath));
     String path =
         filePath.substring(0, filePath.lastIndexOf(File.separatorChar)) + File.separator + TEST_ZIP;
-    FileUtil.zipFileUsingPass(path, filesToAdd, CYPHER);
+    FileUtil.zipFileUsingPass(path, filesToAdd, CIPHER);
     File f = new File(path);
     Assertions.assertTrue(f.exists());
     Assertions.assertTrue(f.isFile());

@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -124,8 +123,8 @@ class FtpUtilTest {
     List<FTPFile> ftpFiles =
         Stream.of(arrangeFTPFile(false))
             .filter(ftpFile -> ftpFile.getSize() > 0L)
-            .collect(Collectors.toList());
-    Mockito.doReturn(ftpFiles.toArray(new FTPFile[ftpFiles.size()]))
+            .toList();
+    Mockito.doReturn(ftpFiles.toArray(new FTPFile[0]))
         .when(ftpClient)
         .listFiles(Mockito.anyString());
     FtpUtil.deleteEmptyFiles(ftpClient, DIR_TEST);
@@ -159,7 +158,7 @@ class FtpUtilTest {
       ftpFiles.add(createFTPFile("File 2.txt", 2L, FTPFile.FILE_TYPE));
       ftpFiles.add(createFTPFile(".bash_profile", 1L, FTPFile.SYMBOLIC_LINK_TYPE));
     }
-    return ftpFiles.toArray(new FTPFile[ftpFiles.size()]);
+    return ftpFiles.toArray(new FTPFile[0]);
   }
 
   private FTPFile createFTPFile(String name, long size, int type) {

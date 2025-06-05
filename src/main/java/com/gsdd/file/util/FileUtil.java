@@ -109,9 +109,7 @@ public final class FileUtil {
   public static File getLastModifiedFile(String ruta) {
     try {
       List<File> filesOnDir = getFilesSortedByLastModification(ruta);
-      return !filesOnDir.isEmpty()
-          ? filesOnDir.get(filesOnDir.size() - NumericConstants.ONE)
-          : null;
+      return !filesOnDir.isEmpty() ? filesOnDir.getLast() : null;
     } catch (Exception e) {
       throw new TechnicalException(e);
     }

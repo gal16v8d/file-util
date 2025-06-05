@@ -29,21 +29,21 @@ public final class SmbUtil {
   /**
    * Check if dir exists, and create it if necessary.
    *
-   * @param smbo
+   * @param smbFile
    * @return
    */
-  public static boolean checkDirectory(UploadableSmbFile smbo) {
+  public static boolean checkDirectory(UploadableSmbFile smbFile) {
     boolean b;
     try {
-      String netUrl = FileConstants.SMB_URL + smbo.getUrl();
-      smbo.setAuth(authenticateSMB(smbo.getUser(), smbo.getPass()));
-      smbo.setRoute(new SmbFile(netUrl, smbo.getAuth()));
-      if (!smbo.getRoute().exists()) {
-        smbo.getRoute().mkdirs();
+      String netUrl = FileConstants.SMB_URL + smbFile.getUrl();
+      smbFile.setAuth(authenticateSMB(smbFile.getUser(), smbFile.getPass()));
+      smbFile.setRoute(new SmbFile(netUrl, smbFile.getAuth()));
+      if (!smbFile.getRoute().exists()) {
+        smbFile.getRoute().mkdirs();
       }
       b = true;
     } catch (SmbException smbe) {
-      b = forceReconnect(smbo);
+      b = forceReconnect(smbFile);
       if (!b) {
         throw new TechnicalException(smbe);
       }
@@ -56,13 +56,13 @@ public final class SmbUtil {
   /**
    * Check the available size on dir vs what we need to store on it.
    *
-   * @param smbo
+   * @param smbFile
    * @param minDirSize minimum size for allow store.
    * @return
    */
-  public static boolean checkAvailableSpaceOnDir(UploadableSmbFile smbo, Long minDirSize) {
+  public static boolean checkAvailableSpaceOnDir(UploadableSmbFile smbFile, Long minDirSize) {
     try {
-      return ByteConverter.MIN_AVAILABLE_SIZE.test(smbo.getRoute().getDiskFreeSpace(), minDirSize);
+      return ByteConverter.MIN_AVAILABLE_SIZE.test(smbFile.getRoute().getDiskFreeSpace(), minDirSize);
     } catch (Exception smbe) {
       throw new TechnicalException(smbe);
     }
@@ -71,11 +71,11 @@ public final class SmbUtil {
   /**
    * Delete 0B size files.
    *
-   * @param smbo
+   * @param smbFile
    */
-  public static void deleteEmptyFiles(UploadableSmbFile smbo) {
+  public static void deleteEmptyFiles(UploadableSmbFile smbFile) {
     try {
-      SmbFile[] filesOnDir = smbo.getRoute().listFiles();
+      SmbFile[] filesOnDir = smbFile.getRoute().listFiles();
       for (SmbFile file : filesOnDir) {
         if (file.length() == NumericConstants.ZERO && file.isFile()) {
           deleteFile(file);
@@ -87,15 +87,15 @@ public final class SmbUtil {
   }
 
   /**
-   * Allow to delete the oldests files from route.
+   * Allow to delete the oldest files from route.
    *
-   * @param smbo
+   * @param smbFile
    * @return
    */
-  public static boolean deleteOldFiles(UploadableSmbFile smbo) {
+  public static boolean deleteOldFiles(UploadableSmbFile smbFile) {
     boolean deleted;
     try {
-      List<SmbFile> smbFiles = getFilesSortedByLastModification(smbo);
+      List<SmbFile> smbFiles = getFilesSortedByLastModification(smbFile);
       int currentSize = smbFiles.size();
       int size = smbFiles.size();
       for (SmbFile file : smbFiles) {
@@ -113,22 +113,22 @@ public final class SmbUtil {
   /**
    * Allows to transfer a file using SMB.
    *
-   * @param smbf smb file
+   * @param smbFile smb file
    * @param file local file
    * @param transferSpeed how many bytes to read/transfer
    * @param printStep for print the action
    * @return
    */
   public static boolean transferFile(
-      UploadableSmbFile smbf, String file, Integer transferSpeed, Integer printStep) {
+      UploadableSmbFile smbFile, String file, Integer transferSpeed, Integer printStep) {
     SmbFileOutputStream smbos = null;
     FileInputStream fis = null;
     try {
       File local = new File(file);
       if (local.exists()) {
-        smbf.setRoute(new SmbFile(smbf.getUrl(), smbf.getAuth()));
-        SmbFile smbFile = new SmbFile(smbf.getUrl() + local.getName(), smbf.getAuth());
-        smbos = new SmbFileOutputStream(smbFile);
+        smbFile.setRoute(new SmbFile(smbFile.getUrl(), smbFile.getAuth()));
+        SmbFile smbFileCopy = new SmbFile(smbFile.getUrl() + local.getName(), smbFile.getAuth());
+        smbos = new SmbFileOutputStream(smbFileCopy);
         fis = new FileInputStream(local);
         byte[] buf = new byte[transferSpeed];
         int read = NumericConstants.ZERO;
@@ -138,7 +138,7 @@ public final class SmbUtil {
           smbos.write(buf, NumericConstants.ZERO, read);
           sum += read;
           if (count == NumericConstants.ZERO || (count % printStep) == NumericConstants.ZERO) {
-            showProgress(smbFile, sum);
+            showProgress(smbFileCopy, sum);
           }
           count++;
           smbos.flush();
@@ -154,10 +154,10 @@ public final class SmbUtil {
     }
   }
 
-  public static List<SmbFile> getFilesSortedByLastModification(UploadableSmbFile smbf) {
+  public static List<SmbFile> getFilesSortedByLastModification(UploadableSmbFile smbFile) {
     List<SmbFile> smbFiles = new ArrayList<>();
     try {
-      SmbFile[] filesOnDir = getFilesFromDir(smbf);
+      SmbFile[] filesOnDir = getFilesFromDir(smbFile);
       for (SmbFile file : filesOnDir) {
         if (!file.isDirectory()) {
           smbFiles.add(file);
@@ -191,24 +191,24 @@ public final class SmbUtil {
   /**
    * Try to reconnect with no credentials.
    *
-   * @param smbo
+   * @param smbFile
    * @return
    */
-  private static boolean forceReconnect(UploadableSmbFile smbo) {
+  private static boolean forceReconnect(UploadableSmbFile smbFile) {
     boolean b = false;
-    if (!smbo.isReconnect()) {
-      smbo.setUser(null);
-      smbo.setPass(null);
-      smbo.setReconnect(Boolean.TRUE);
-      b = checkDirectory(smbo);
+    if (!smbFile.isReconnect()) {
+      smbFile.setUser(null);
+      smbFile.setPass(null);
+      smbFile.setReconnect(Boolean.TRUE);
+      b = checkDirectory(smbFile);
     }
     return b;
   }
 
-  private static boolean deleteFile(SmbFile archivo) {
+  private static boolean deleteFile(SmbFile smbFile) {
     boolean b = false;
     try {
-      archivo.delete();
+      smbFile.delete();
       b = true;
     } catch (SmbException smb) {
       log.error(smb.getMessage(), smb);
@@ -216,7 +216,7 @@ public final class SmbUtil {
     return b;
   }
 
-  private static SmbFile[] getFilesFromDir(UploadableSmbFile smbf) throws SmbException {
-    return Optional.ofNullable(smbf.getRoute().listFiles()).orElseGet(() -> new SmbFile[0]);
+  private static SmbFile[] getFilesFromDir(UploadableSmbFile smbFile) throws SmbException {
+    return Optional.ofNullable(smbFile.getRoute().listFiles()).orElseGet(() -> new SmbFile[0]);
   }
 }

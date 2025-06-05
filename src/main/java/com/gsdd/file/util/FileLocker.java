@@ -19,11 +19,11 @@ public class FileLocker {
   public boolean isAppActive() {
     boolean response = true;
     File file = new File(appName + FileConstants.FILE_EXT);
-    try (FileChannel channel =
-            new RandomAccessFile(file, FileConstants.FILE_PERMISSION).getChannel();
+    try (RandomAccessFile raf = new RandomAccessFile(file, FileConstants.FILE_PERMISSION);
+        FileChannel channel = raf.getChannel();
         FileLock lock = channel.tryLock()) {
       if (lock == null) {
-        closeLock(lock, channel);
+        closeLock(null, channel);
       }
       Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownThread(lock, channel, file)));
       response = false;
