@@ -12,6 +12,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class ByteConverter {
 
+  public static final BiPredicate<Long, Long> MIN_AVAILABLE_SIZE =
+      (value, minAvailable) -> value >= minAvailable;
+
   private static final DecimalFormat NUMBER_FORMAT =
       new DecimalFormat(RegexConstants.DECIMAL_FORMAT);
 
@@ -21,9 +24,6 @@ public final class ByteConverter {
               .append(" ")
               .append(FileConstants.getByteUnits()[unit])
               .toString();
-
-  public static final BiPredicate<Long, Long> MIN_AVAILABLE_SIZE =
-      (value, minAvailable) -> value >= minAvailable;
 
   public static String readableFileSize(long size) {
     try {
